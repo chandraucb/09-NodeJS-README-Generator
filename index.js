@@ -1,6 +1,7 @@
 //imports
 const inquirer = require('inquirer')
 const fs = require('fs')
+const generateMarkdown = require('./utils/generateMarkdown')
 
 //README Questions
 const questions = [{
@@ -15,21 +16,14 @@ const promptUser = () => {
 }
 
 // function to write README file
-//function writeToFile(fileName, data) {}
 const { writeFile } = fs.promises;
-
-
-// function to generate README content
-const generateReadme = ({ title }) =>
-  `${title}
-  `;
 
 // Function to initialize app
 function init() {
     promptUser()
     .then((answers) => {
         console.log(answers)
-        writeFile('README.md', generateReadme(answers))
+        writeFile('README.md', generateMarkdown(answers))
     })
     .then(()=> console.log('Readme created successfully!'))
     .catch((err) => console.error(err));
