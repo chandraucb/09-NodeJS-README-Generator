@@ -10,9 +10,22 @@ function renderLicenseLink(license) {}
 // If there is no license, return an empty string
 function renderLicenseSection(license) {}
 
+function renderDescription ( description) {
+  let descMarkdown = ''
+  if (description) {
+    descMarkdown = `## Description
+${description}`
+  }
+
+  return descMarkdown
+  
+}
+
 // TODO: Create a function to generate markdown for README
 function generateMarkdown(data) {
   return `# ${data.title}
+
+${renderDescription(data.description)}
 
 `;
 }
