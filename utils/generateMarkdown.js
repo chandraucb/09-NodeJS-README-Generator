@@ -22,7 +22,7 @@ function renderTile (title) {
 function renderDescription (description) {
   if (description) {
     return `## Description
-${description}`
+${description.replaceAll('\\n','\n')}`
   }
   return ''
 }
