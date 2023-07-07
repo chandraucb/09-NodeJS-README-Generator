@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@octokit/rest": "^19.0.13",
     "inquirer": "8.2.4"
   }
 }

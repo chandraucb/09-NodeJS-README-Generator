@@ -2,9 +2,15 @@
 const inquirer = require('inquirer')
 const fs = require('fs')
 const generateMarkdown = require('./utils/generateMarkdown')
+const { Octokit } = require("@octokit/rest")
+const {Separator} = require('inquirer')
+
+const octokit = new Octokit({
+    auth: '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'
+  })  
 
 //README Questions
-const questions = [{
+let questions = [{
     type: 'input',
     name: 'title',
     message: `What is your project title?
@@ -18,7 +24,12 @@ const questions = [{
     - What problem does it solve?
     - What did you learn?
 `
-  }, {
+  },{
+    type: 'input',
+    name: 'url',
+    message : `Github URL for the project repository
+`
+    },{
     type: 'confirm',
     name: 'toc',
     message: `Table of Contents (Optional)
@@ -47,27 +58,20 @@ If you used any third-party assets that require attribution, list the creators w
 If you followed tutorials, include links to those here as well.
 `
     } , {
-        type: 'input',
+        type: 'list',
         name: 'license',
         message : `The last section of a high-quality README file is the license. 
 This lets other developers know what they can and cannot do with your project. 
 If you need help choosing a license, refer to 
 [https://choosealicense.com/](https://choosealicense.com/).
-`
+`,
+choices: ''
     } , {
         type: 'input',
         name: 'credits',
         message : `List your collaborators, if any, with links to their GitHub profiles.
 If you used any third-party assets that require attribution, list the creators with links to their primary web presence in this section.
 If you followed tutorials, include links to those here as well.
-`
-    } , {
-        type: 'input',
-        name: 'badges',
-        message : `Badges aren't necessary, per se, but they demonstrate street cred. 
-Badges let other developers know that you know what you're doing. 
-Check out the badges hosted by [shields.io](https://shields.io/). 
-You may not understand what they all represent now, but you will in time.
 `
     } , {
         type: 'input',
@@ -100,13 +104,40 @@ const { writeFile } = fs.promises;
 
 // Function to initialize app
 function init() {
-    promptUser()
-    .then((answers) => {
-        console.log(answers)
-        writeFile('README.md', generateMarkdown(answers))
+
+    const promise = octokit.request('GET /licenses', {
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
     })
-    .then(()=> console.log('Readme created successfully!'))
-    .catch((err) => console.error(err));
+    promise.then((licenses) => {
+        console.log(licenses)
+        let licensesList = Object.keys(licenses.data).map((key) => 
+            { 
+                let value = {
+                    "name" : licenses.data[key].key.toUpperCase() ,
+                    "value" : licenses.data[key].key
+                }
+                return value
+            }
+        );
+        console.log(licensesList)
+
+        Object.keys(questions).forEach( (key) => {
+            if ( questions[key].name === 'license' ) {
+                questions[key].choices = licensesList
+            }
+        })
+    
+        promptUser()
+        .then((answers) => {
+            console.log(answers)
+            writeFile('README.md', generateMarkdown(answers))
+        })
+        .then(()=> console.log('Readme created successfully!'))
+        .catch((err) => console.error(err));
+
+    })
 }
 
 // Function call to initialize app
