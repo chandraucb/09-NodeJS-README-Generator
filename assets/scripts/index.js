@@ -1,12 +1,7 @@
 //imports
 const inquirer = require('inquirer')
 const fs = require('fs')
-const generateMarkdown = require('./utils/generateMarkdown')
-const { Octokit } = require("@octokit/rest")
-
-const octokit = new Octokit({
-    auth: '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'
-  })  
+const generateMarkdown = require('./utils/generateMarkdown') 
 
 //README Questions
 let questions = [{
@@ -113,51 +108,65 @@ const { writeFile } = fs.promises;
 
 // Function to initialize app
 function init() {
-
-    const promise = octokit.request('GET /licenses', {
-        headers: {
-          'X-GitHub-Api-Version': '2022-11-28'
-        }
-    })
-    promise.then((licenses) => {
-        let licensesList = Object.keys(licenses.data).map((key) => 
-            { 
-                let value = {
-                    "name" : licenses.data[key].name ,
-                    "value" : licenses.data[key].url
+    //Get list of available licenses
+    fetch('https://api.github.com/licenses').then(
+        function (licResponse) {
+            return licResponse.json()
+        }).then( (licenses) => {
+            console.log (licenses)
+            let licensesList = Object.keys(licenses).map((key) => 
+                { 
+                     //create license prompt choices with name and value as license url
+                    let value = {
+                        "name" : licenses[key].name ,
+                        "value" : licenses[key].url
+                    }
+                    return value
                 }
-                return value
-            }
-        );
+            );
 
-        console.log (licensesList)
-        console.log (licenses)
+            console.log (licensesList)
+            
+            //Add license choices to question prompt
+            Object.keys(questions).forEach( (key) => {
+                if ( questions[key].name === 'license' ) {
+                    questions[key].choices = licensesList
+                }
+            })
+        
+            promptUser()
+            .then((answers) => {
+                fetch(answers.license)
+                    .then(function (response) {
+                    return response.json()
+                    })
+                    .then(function (data) {
+                        data.developer_name = answers.developer_name?answers.developer_name:''
+                        answers.license = data
+                        if (data.key == 'unlicense') {
+                            writeFile('output/UNLICENSE',data.body.replace('[year]' , (new Date()).getFullYear()).replace('[fullname]',answers.developer_name))
+                            //Delete license file in case present in the output folder
+                            try {
+                                fs.unlinkSync('output/LICENSE')
+                            } catch (err) {}
+                        } else {
+                            writeFile('output/LICENSE',data.body.replace('[year]' , (new Date()).getFullYear()).replace('[fullname]',answers.developer_name))
+                            //Delete unlicense file in case present in the output folder
+                            try {
+                                fs.unlinkSync('output/UNLICENSE')
+                            } catch (err) {}
+                        }
+                        
+                        return generateMarkdown(answers)
+                    }).then((content) => {
+                        writeFile('output/README.md',content)
+                    })
+            
+            })
+            .then(()=> console.log('Readme created successfully!'))
+            .catch((err) => console.error(err));
 
-        Object.keys(questions).forEach( (key) => {
-            if ( questions[key].name === 'license' ) {
-                questions[key].choices = licensesList
-            }
         })
-    
-        promptUser()
-        .then((answers) => {
-            fetch(answers.license)
-                .then(function (response) {
-                  return response.json()
-                })
-                .then(function (data) {
-                    data.developer_name = answers.developer_name?answers.developer_name:''
-                    answers.license = data
-                    return generateMarkdown(answers)
-                }).then((content) => {
-                    writeFile('output/README.md',content)
-                })
-           
-        })
-        .then(()=> console.log('Readme created successfully!'))
-        .catch((err) => console.error(err));
-
-    })
 }
 
 // Function call to initialize app

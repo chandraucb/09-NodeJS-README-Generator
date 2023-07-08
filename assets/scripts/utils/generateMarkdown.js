@@ -48,7 +48,7 @@ function renderLicense(license) {
   if (license) {
 
     return `## License
-Copyright (c) ${(new Date()).getYear()} ${license.developer_name}
+Copyright (c) ${(new Date()).getFullYear()} ${license.developer_name}
 Licensed under the ${license.name}
 
 
@@ -67,9 +67,10 @@ function renderQuestions(data) {
     if (data.developer_name) 
       content = content.concat('\n', 'Name : ', data.developer_name)
     if (data.git_url)
-      content = content.concat('\n', 'Git Profile : ', data.git_url)
+      content = content.concat('\n', 'Git profile : ', data.git_url)
     if (data.developer_email)
-      content = content.concat('\n', 'Contact email for any additional clarifications : ', data.developer_email)
+      content = content.concat('\n', 'Contact email : ', data.developer_email)
+      content = content.concat('\n', 'Reach me through email with additional questions')
     return content
   } 
 
