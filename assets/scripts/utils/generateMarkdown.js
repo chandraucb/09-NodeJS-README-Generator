@@ -1,3 +1,5 @@
+
+
 //Function add title
 function renderTile (title) {
   if (title) {
@@ -6,10 +8,37 @@ function renderTile (title) {
   return ''
 }
 
+function findLicenseColor(id) {
+  
+  if (id.toUpperCase().includes('MPL') || id.toUpperCase().includes('Apache'))
+    return 'green'
+  
+  if (id.toUpperCase().includes('GP') || id.toUpperCase().includes('IPL') || id.toUpperCase().includes('ISC'))
+    return 'blue'
+  
+  if (id.toUpperCase().includes('BSL'))
+    return 'lightblue'
+  
+  if (id.toUpperCase().includes('BSD'))
+    return 'orange'
+  
+  if (id.toUpperCase().includes('MIT'))
+    return 'yellow'
+
+  if (id.toUpperCase().includes('EPL'))
+    return 'red'
+  
+  return 'lightgrey'
+
+}
+
 //Function to render license badge 
-function renderBadge(repoPath) {
-  if (repoPath) {
-    return `![GitHub](https://img.shields.io/github/license/${repoPath})`
+function renderBadge(license) {
+
+  if (license) {
+    let licenseId = license.spdx_id.replaceAll('-','_')
+    let color = findLicenseColor(license.spdx_id)
+    return `[![License](https://img.shields.io/badge/License-${licenseId}-${color}.svg)](${license.html_url})`
   }
   return ''
 }
@@ -17,11 +46,35 @@ function renderBadge(repoPath) {
 //Function to render license badge 
 function renderLicense(license) {
   if (license) {
+
     return `## License
-${license}
+Copyright (c) ${(new Date()).getYear()} ${license.developer_name}
+Licensed under the ${license.name}
+
+
+${license.description}
+More information about this license can be found at below link,
+${license.html_url}
 `
   }
   return ''
+}
+
+//Render questions 
+function renderQuestions(data) {
+  if (data.git_url || data.developer_email) {
+    let content = '## Questions'
+    if (data.developer_name) 
+      content = content.concat('\n', 'Name : ', data.developer_name)
+    if (data.git_url)
+      content = content.concat('\n', 'Git Profile : ', data.git_url)
+    if (data.developer_email)
+      content = content.concat('\n', 'Contact email for any additional clarifications : ', data.developer_email)
+    return content
+  } 
+
+  return ''
+
 }
 
 //Render content and its Title
@@ -35,7 +88,6 @@ ${content.replaceAll('\\n','\n')}`
 
 //Function to print table of content
 function renderTOC (data) {
-  debugger
   let content = '## Table of Contents'
   if (data.toc) {
     if (data.installation) {
@@ -57,7 +109,6 @@ function renderTOC (data) {
     if (data.features) {
       content = content.concat('\n', ' - [Features](#Features)')
     }
-
   }
 
   return content
@@ -68,7 +119,7 @@ function renderTOC (data) {
 function generateMarkdown(data) {
   return `${renderTile(data.title)}
 
-${renderBadge((data.url).replaceAll('https://github.com/',''))}
+${renderBadge(data.license)}
 
 ${renderData('Description',data.description)}
 
@@ -84,9 +135,11 @@ ${renderLicense(data.license)}
 
 ${renderData('Features',data.features)}
 
-${renderData('Contribution',data.contribution)}
+${renderData('Contributor',data.contribution)}
 
 ${renderData('Tests',data.tests)}
+
+${renderQuestions(data)}
 
 `;
 }

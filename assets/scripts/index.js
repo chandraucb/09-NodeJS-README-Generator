@@ -3,10 +3,9 @@ const inquirer = require('inquirer')
 const fs = require('fs')
 const generateMarkdown = require('./utils/generateMarkdown')
 const { Octokit } = require("@octokit/rest")
-const {Separator} = require('inquirer')
 
 const octokit = new Octokit({
-    auth: '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'
+    auth: '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'
   })  
 
 //README Questions
@@ -26,10 +25,20 @@ let questions = [{
 `
   },{
     type: 'input',
-    name: 'url',
-    message : `Github URL for the project repository
+    name: 'developer_name',
+    message : `Enter developer name
 `
     },{
+    type: 'input',
+    name: 'git_url',
+    message : `Github profile URL 
+`
+  },{
+    type: 'input',
+    name: 'developer_email',
+    message : `Enter developer contact email
+`
+  },{
     type: 'confirm',
     name: 'toc',
     message: `Table of Contents (Optional)
@@ -111,17 +120,18 @@ function init() {
         }
     })
     promise.then((licenses) => {
-        console.log(licenses)
         let licensesList = Object.keys(licenses.data).map((key) => 
             { 
                 let value = {
-                    "name" : licenses.data[key].key.toUpperCase() ,
-                    "value" : licenses.data[key].key
+                    "name" : licenses.data[key].name ,
+                    "value" : licenses.data[key].url
                 }
                 return value
             }
         );
-        console.log(licensesList)
+
+        console.log (licensesList)
+        console.log (licenses)
 
         Object.keys(questions).forEach( (key) => {
             if ( questions[key].name === 'license' ) {
@@ -131,8 +141,18 @@ function init() {
     
         promptUser()
         .then((answers) => {
-            console.log(answers)
-            writeFile('README.md', generateMarkdown(answers))
+            fetch(answers.license)
+                .then(function (response) {
+                  return response.json()
+                })
+                .then(function (data) {
+                    data.developer_name = answers.developer_name?answers.developer_name:''
+                    answers.license = data
+                    return generateMarkdown(answers)
+                }).then((content) => {
+                    writeFile('output/README.md',content)
+                })
+           
         })
         .then(()=> console.log('Readme created successfully!'))
         .catch((err) => console.error(err));
