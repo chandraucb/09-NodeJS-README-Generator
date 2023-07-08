@@ -50,11 +50,6 @@ function renderLicense(license) {
     return `## License
 Copyright (c) ${(new Date()).getFullYear()} ${license.developer_name}
 Licensed under the ${license.name}
-
-
-${license.description}
-More information about this license can be found at below link,
-${license.html_url}
 `
   }
   return ''
@@ -65,12 +60,12 @@ function renderQuestions(data) {
   if (data.git_url || data.developer_email) {
     let content = '## Questions'
     if (data.developer_name) 
-      content = content.concat('\n', 'Name : ', data.developer_name)
+      content = content.concat(' \n ', ' Name : ', data.developer_name )
     if (data.git_url)
-      content = content.concat('\n', 'Git profile : ', data.git_url)
+      content = content.concat(' \n ', ' Git profile : ', data.git_url)
     if (data.developer_email)
-      content = content.concat('\n', 'Contact email : ', data.developer_email)
-      content = content.concat('\n', 'Reach me through email with additional questions')
+      content = content.concat(' \n ', ' Contact email : ', data.developer_email)
+      content = content.concat(' \n ', ' Reach me through email with additional questions')
     return content
   } 
 

@@ -113,7 +113,7 @@ function init() {
         function (licResponse) {
             return licResponse.json()
         }).then( (licenses) => {
-            console.log (licenses)
+            //console.log (licenses)
             let licensesList = Object.keys(licenses).map((key) => 
                 { 
                      //create license prompt choices with name and value as license url
@@ -125,7 +125,7 @@ function init() {
                 }
             );
 
-            console.log (licensesList)
+            //console.log (licensesList)
             
             //Add license choices to question prompt
             Object.keys(questions).forEach( (key) => {
