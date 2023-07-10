@@ -156,6 +156,8 @@ function init() {
                                 fs.unlinkSync('output/UNLICENSE')
                             } catch (err) {}
                         }
+
+                        console.log(answers)
                         
                         return generateMarkdown(answers)
                     }).then((content) => {
