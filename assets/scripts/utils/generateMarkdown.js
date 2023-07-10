@@ -103,15 +103,15 @@ function renderTOC (data) {
     }
 
     if (data.features) {
-      content = content.concat('\n', ' - [Features](#Features)')
+      content = content.concat('\n', ' - [Features](#features)')
     }
 
     if (data.contribution) {
-      content = content.concat('\n', ' - [Contributor](#Contributor)')
+      content = content.concat('\n', ' - [Contributor](#contributor)')
     }
 
     if (data.tests) {
-      content = content.concat('\n', ' - [Tests](#Tests)')
+      content = content.concat('\n', ' - [Tests](#tests)')
     }
   }
 

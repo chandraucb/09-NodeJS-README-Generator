@@ -9,6 +9,8 @@ Application to create README for a project
  - [Installation](#installation)
  - [Usage](#usage)
  - [License](#license)
+ - [Contributor](#contributor)
+ - [Tests](#tests)
 
 ## Installation
 Clone the github repo as shown below, <br/><br/> ``` git clone git@github.com:chandraucb/09-NodeJS-README-Generator.git ``` <br/><br/> Run node package install <br/><br/> ``` npm install ```
@@ -25,9 +27,11 @@ Licensed under the MIT License
 
 
 
+## Contributor
+Code contributions are welcome! <br> To contributre, make a fork and clone of the project to your local repo to include your changes. <br> Once changes are ready, create a pull request to merge them to main branch. <br> Include CONTRIBUTOR.md to get the credits
 
-
-
+## Tests
+To test the app, run following unit test command <br/> ``` npm install jest ```<br/> ``` npm test ```
 
 ## Questions 
   Name : Chandrasekar Mohan 

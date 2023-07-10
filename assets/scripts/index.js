@@ -157,7 +157,7 @@ function init() {
                             } catch (err) {}
                         }
 
-                        console.log(answers)
+                        //console.log(answers)
                         
                         return generateMarkdown(answers)
                     }).then((content) => {
